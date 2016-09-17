@@ -1,0 +1,49 @@
+<div class="no-select" >
+	<!--<md-header params="showPrimaryIcon: true, onPrimaryIconClick: onPrimaryIconClick"></md-header>-->
+    <div class="md-header">
+        <span data-bind="click: onSettingsClicked"><i class="material-icons md-icon">settings</i></span>
+
+        <span class="timer-display" data-bind="text: timeRemaining"></span>
+    </div>
+	
+	<div class="quiz-item-container" data-bind="visible: showQuiz">
+        <div class="quiz-question" data-bind="html: questionText, style: { color: questionTextColor }"></div>
+
+
+        <div class="row" data-bind="foreach: firstRowOptions">
+            <span class="quiz-answer-option col-xs-3" data-bind="text: value, click: $parent.answerClick"></span>
+        </div>
+
+        <div class="row" data-bind="foreach: secondRowOptions">
+            <span class="quiz-answer-option col-xs-3" data-bind="text: value, click: $parent.answerClick"></span>
+        </div>
+
+	</div>
+
+    <div class="quiz-item-container" data-bind="visible: showQuizStartScreen">
+        <div data-bind="text: quizDescription" class="quiz-description"></div>
+        <div data-bind="click: startQuiz" class="quiz-start">Start Quiz</div>
+    </div>
+
+    <div class="quiz-item-container" data-bind="visible: showQuizResults">
+        <div class="quiz-description" data-bind="html: quizResultsDescription"></div>
+
+
+
+        <div class="quiz-questions row">
+        <!-- ko foreach: quizQuestions -->
+        <div class="col-md-6 col-sm-12" data-bind="html: text, style: { color: color }"></div>
+        <!-- /ko -->
+        </div>
+
+        <div class="quiz-start" data-bind="click: startQuiz">
+            Start Again
+        </div>
+
+    </div>
+
+
+    <div class="md-footer" data-bind="text: quizProgressDescrip, visible: showQuizFooter"></div>
+    
+
+</div>

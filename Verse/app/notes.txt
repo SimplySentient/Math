@@ -1,0 +1,45 @@
+﻿for mobile:
+	full screen
+
+functionality:
+	copying The Walrus.. contained some extra line breaks.. only allow single blank lines?
+	Android back button simulate in app back button?
+
+	at end? hide footer? display "End"?
+
+
+	library list:
+		sort (author, name)
+		search
+		filter
+		tags? 
+		links to youtube videos? 
+
+
+	add:
+		don't allow blanks
+		trim leading & trailing blank lines automatically (can I catch a paste command?)
+
+display:
+	header title looks ok big, should all be aligned instead of spilling below back arrow
+
+
+item view:
+	Title, author, last read, READ
+
+	Quiz: "View this item line by line while checking if remember it correctly." 
+		
+
+Quiz view:
+	Show line by line, Show stanza by stanza
+
+
+Online data:
+	
+	bug: removing from one device doesn't update another, don't know if this worth worrying about at this stage
+
+	
+
+
+	have library list of names and authors (and key?) be one item with a version
+	on startup version is checked, and if updated new items are fetched
