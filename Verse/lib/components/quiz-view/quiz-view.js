@@ -2,52 +2,52 @@
     return function quizViewModel(params) {
 		var self = this;
 		
-		//console.log('item-view', params);
-		
-		//self.questionAnswer = 0;
-		self.questionText = ko.observable();
+		self.questionText = ko.observable('');
 		self.questionTextColor = ko.observable('black');
 		self.showingAnswer = false;
 		self.showQuiz = ko.observable(!params.settings.quizMode.active());
 
         // quiz variables
 		self.showQuizFooter = ko.observable(false); 
-		self.quizQuestionNumber = ko.observable(0);
+		//self.quizQuestionNumber = ko.observable(0);
 		self.showQuizStartScreen = ko.observable(params.settings.quizMode.active());
 		self.showQuizResults = ko.observable(false);
 		self.quizQuestions = ko.observableArray([]); // only used to keep track to show in results at end
 		self.quizResultsDescription = ko.observable('');
 		self.timeRanOut = false;
-		self.timeRemaining = ko.observable('');
+		self.timeRemaining = ko.observable(0);
+
+		self.showConfirmExit = ko.observable(false);
+
+		self.showRepeatIncorrect = ko.observable(false);
 
         // timer
 		self.timer = null; 
 		self.elapsedTime = 0;
 
-		self.firstRowOptions = ko.observableArray([{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }]);
-		self.secondRowOptions = ko.observableArray([{ value: 5 }, { value: 6 }, { value: 7 }, { value: 8 }]);
-
+		self.answerOptionRows = ko.observableArray([]);
 
 		self.init = function () {
 		    questionManager.operators = self.getActiveOperators();
+		    questionManager.quizQuestionCount = params.settings.quizMode.questionCount();
 
-		    self.newQuestion();
-
+		    if (!params.settings.quizMode.active())
+		        self.newQuestion();
+		    //console.log('here!');
 		}
 
-		self.answerClick = function (val) {
+		self.answerClick = function (val, event) {
+		    //console.log(val);
 		    if (self.showingAnswer) return;
-		    //console.log("answer clicked", val);
 
-		    var correctAnswer = val.value === questionManager.answer;
+		    var correctAnswer = questionManager.checkAnswer(val);
 
 		    self.questionTextColor(correctAnswer ? '#32d25b' : 'red');
 
 		    var str = self.questionText();
-		    str = str.substr(0, str.length - 1) + val.value;
-		    self.questionText(str);
+		    self.questionText(str.substr(0, str.length - 1) + val);
 
-		    self.quizQuestions.push({ text: str, correct: correctAnswer, color: correctAnswer ? 'black' : 'red' });
+
 
 		    self.showingAnswer = true;
 		    setTimeout(function () {
@@ -58,43 +58,36 @@
 		   
 		}
 
+		self.mouseDown = function (val, event) {
+		    event.target.className += ' clickAnimation';
+
+		    setTimeout(function () {
+		        event.target.className = event.target.className.replace(/(?:^|\s)clickAnimation(?!\S)/g, '')
+		    }, 500)
+		}
 
 		self.newQuestion = function () {
-		    //var operator = self.getRandomOperator();
-		    //var term1, term2;
-		    //var maxTerm = operator.maxTerm();
-		    //term1 = Math.floor((Math.random() * maxTerm) + 1);
-		    //term2 = Math.floor((Math.random() * maxTerm) + 1);
+		    if (questionManager.questionNumber() === questionManager.questionCount && params.settings.quizMode.active()) {
+		        self.quizEnd();
+		        return;
+		    }
 
-		    //if (operator.sign === '+') {
-		    //    self.questionAnswer = term1 + term2;
-		    //} else if (operator.sign === '-') {
-		    //    self.questionAnswer = term1;
-		    //    term1 = self.questionAnswer + term2;
-		    //} if (operator.sign === 'x') {
-		    //    self.questionAnswer = term1 * term2;
-		    //} else if (operator.sign === '&divide;') {
-		    //    self.questionAnswer = term1;
-		    //    term1 = self.questionAnswer * term2;
-		    //}
-
-		    //self.questionText(term1 + " " + operator.sign + " " + term2 + " = ?");
-
-		    //self.populateAnswerOptions();
-
-		    questionManager.newQuestion();
+		    questionManager.nextQuestion();
 
 		    self.questionText(questionManager.questionText);
 
-		    self.firstRowOptions(questionManager.answerOptions.slice(0, 4));
-		    self.secondRowOptions(questionManager.answerOptions.slice(4, 8));
+		    var temp = [];
+		    temp.push(new ko.observableArray(questionManager.answerOptions.slice(0, 4)));
+		    temp.push(new   ko.observableArray(questionManager.answerOptions.slice(4, 8)));
+		    self.answerOptionRows(temp);
 
-		    if (self.quizQuestionNumber() === params.settings.quizMode.questionCount()) {
-		        self.quizEnd();
-		    } else
-		        self.quizQuestionNumber(self.quizQuestionNumber() + 1);
+		    //if (self.quizQuestionNumber() === params.settings.quizMode.questionCount()) {
+		    //    self.quizEnd();
+		    //} else
+		    //    self.quizQuestionNumber(self.quizQuestionNumber() + 1);
 
 		}
+
 
 
 		self.getTimeLongDisplay = function (totalSeconds) { // e.g. 2 minutes and 4 seconds (if m or s is 0 term is not included)
@@ -131,26 +124,39 @@
 		    self.showQuiz(false);
 		    self.showQuizFooter(false);
 		    clearTimeout(self.timer);
-		    self.timeRemaining('');
+		    self.timeRemaining(0);
         
+		    questionManager.repeatIncorrect = false;
+
 		    var timeStr = 'Completed in ' + self.getTimeLongDisplay(self.elapsedTime);
 
-		    var questionCount = params.settings.quizMode.questionCount();
+		    var questionCount = questionManager.questionCount;
 		    var correctCount = 0;
-		    for (var i = 0; i < self.quizQuestions().length; i++) {
-		        if (self.quizQuestions()[i].correct)
+
+
+		    //var tempQuestions = questionManager.pastQuestions; //.slice(0); // create copy
+		    for (var i = 0; i < questionManager.pastQuestions.length; i++) {
+		        var question = questionManager.pastQuestions[i];
+		        var str = question.text;
+		        question.completeText = str.substr(0, str.length - 1) + question.submittedAnswer;
+		        question.color = question.correct ? 'black' : 'red';
+		        if (question.correct)
 		            correctCount++;
 		    }
+
+		    self.quizQuestions.removeAll();
+		    self.quizQuestions(questionManager.pastQuestions);
 
 		    var percentStr = Math.round(correctCount / questionCount * 100) + '%';
 
 		    var displayStr = correctCount + ' out of ' + questionCount + '</br>' + percentStr;
-		    if (self.ranOutOfTime)
+		    if (self.timeRanOut)
 		        displayStr = 'Time Up!</br>' + displayStr
 		    else
 		        displayStr = displayStr + '</br>' + timeStr;
 
 		    self.quizResultsDescription(displayStr);
+		    self.showRepeatIncorrect(correctCount < questionCount);
 		}
 
 		self.getActiveOperators = function () {
@@ -163,60 +169,63 @@
 		    return activeOps;
 		}
 
-		//self.getRandomOperator = function () {
-		//    var activeOps = self.getActiveOperators();
-		//    return activeOps[Math.floor((Math.random() * activeOps.length))];
-		//}
 
-		//self.populateAnswerOptions = function () {
-		//    var answer = self.questionAnswer;
-		//    var answerIndex = Math.floor((Math.random() * 8)); // 0 to 7 - 8 options to select from  
-		//    var diff = answer - answerIndex;
-
-		//    if (diff < 0) {
-		//        answerIndex = 0;
-		//        diff = 0;
-		//    }
-
-		//    var opts1 = [];
-		//    var opts2 = [];
-
-		//    for (var i = 0; i < 4; i++) {
-		//        opts1.push({ value: diff + i });
-		//        opts2.push({ value: diff + i + 4}); // + 4 for second row
-		//    }
-
-		//    self.firstRowOptions(opts1);
-		//    self.secondRowOptions(opts2);
-
-		//}
+		self.repeatIncorrect = function () {
+		    questionManager.repeatIncorrect = true;
+		    self.startQuiz();
+		}
 
 		self.startQuiz = function () {
 		    self.showQuizStartScreen(false);
-		    self.quizQuestionNumber(1);
+		    //self.quizQuestionNumber(1);
 		    self.showQuizFooter(true);
 		    self.showQuiz(true);
-		    self.quizQuestions.removeAll();
+            //if (!questionManager.repeatIncorrect) 
+		    //    questionManager.clearHistory();
+		    questionManager.init();
+
 		    self.showQuizResults(false);
 		    self.elapsedTime = 0;
 		    self.timeRanOut = false;
-		    self.timeRemaining(params.settings.quizMode.timeLimit() * 60);
 
-		    self.timer = setInterval(function () {
-		        self.elapsedTime += 1;
+		    self.newQuestion();
 
-		        var limit = params.settings.quizMode.timeLimit() * 60;
+		    if (params.settings.quizMode.timerActive()) {
+		        self.timeRemaining(params.settings.quizMode.timeLimit() * 60);
 
-		        self.timeRemaining(limit - self.elapsedTime)
+		        self.timer = setInterval(function () {
+		            self.elapsedTime += 1;
 
-		        //console.log(self.elapsedTime + ' out of ' + );
-		        if (self.elapsedTime >= limit) {
-		            self.timeRanOut = true;
-		            self.quizEnd();
-		            //console.log('end');
-		        }
-		    }, 1000);
+		            var limit = params.settings.quizMode.timeLimit() * 60;
+
+		            self.timeRemaining(limit - self.elapsedTime)
+
+		            if (self.elapsedTime >= limit) {
+		                self.timeRanOut = true;
+		                self.quizEnd();
+		            }
+		        }, 1000);
+		    }
 		}
+
+		self.timeRemainingDescrip = ko.computed(function () {
+		    var time = self.timeRemaining();
+		    if (time === 0) return '';
+
+		    var min = Math.floor(time / 60);
+		    var sec = time % 60;
+		    var ret = '';
+
+		    if (min > 0) {
+		        ret = min + ':';
+
+		        if (sec < 10)
+		            sec = '0' + sec;
+		    }
+
+		    return ret + sec;
+
+		});
 
 		self.quizDescription = ko.computed(function () {
 		    var str = '';
@@ -239,20 +248,31 @@
 
 
 		self.quizProgressDescrip = ko.computed(function () {
-		    return self.quizQuestionNumber() + ' of ' + params.settings.quizMode.questionCount();
+		    //return self.quizQuestionNumber() + ' of ' + params.settings.quizMode.questionCount();
+		    return questionManager.questionNumber() + ' of ' + questionManager.questionCount;
 		});
 
+		self.confirmExitYes = function () {
+		    self.showConfirmExit(false);
+		    self.exit();
+		}
+
+		self.confirmExitNo = function () {
+		    self.showConfirmExit(false);
+		}
+
 		self.onSettingsClicked = function () {
+		    if (self.showQuiz() && params.settings.quizMode.active())
+		        self.showConfirmExit(true);
+		    else
+		        self.exit();
+		}
+
+		self.exit = function () {
 		    if (params.onSettingsClick)
 		        params.onSettingsClick();
 		}
 				
-
-		//for (var i = 0; i < 250; i++) {
-		//    console.log(self.getTimeLongDisplay(i));
-		//}
-
-
 		self.init();
     }
 	

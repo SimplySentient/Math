@@ -1,0 +1,85 @@
+﻿.md-header {
+    padding-top: 20px;
+}
+
+.md-icon {
+    font-size: 48px !important;
+}
+
+
+.settings {
+    padding: 40px;
+}
+@media screen and (max-device-width : 680px)
+{
+    .settings {
+        padding: 20px;
+    }
+}
+
+.settings-group-header {
+    padding-bottom: 10px;
+    font-size: 36px;
+}
+
+.settings-group-header:not(:first-child) {
+    padding-top: 30px;
+}
+
+.settings-icon-container {
+    width: 30px;
+    display: inline-block;
+}
+
+.settings-list-item {
+    height: 36px;
+    font-size: 24px;
+}
+@media screen and (max-device-width : 680px)
+{
+    .settings-list-item {
+        font-size: 18px;
+    }
+}
+
+.new-row-padding {
+    padding-left: 0px;
+}
+@media screen and (max-device-width : 768px)
+{
+    .new-row-padding {
+        padding-left: 51px;
+        padding-bottom: 16px;
+    }
+}
+
+
+
+.plus-minus-block {
+    /*display: inline-block;
+    width: 60px;*/
+    padding: 0px 20px;
+}
+@media screen and (max-device-width : 510px)
+{
+    .plus-minus-block {
+        padding: 0px 10px;
+    }
+}
+
+.plus-minus-text-block {
+    display: inline-block;
+    width: 200px; /* 60px */
+    text-align: center;
+}
+
+
+.checkbox-offset {
+    padding-left: 0px;
+}
+@media screen and (max-device-width : 768px)
+{
+    .checkbox-offset {
+        padding-left: 50px;
+    }
+}

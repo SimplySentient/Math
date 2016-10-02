@@ -22,7 +22,10 @@
 		}
 
 		self.displayValue = ko.computed(function () {
-		    return self.value() + self.unit;
+            if (params.text)
+                return params.text();
+            else 
+		        return self.value() + self.unit;
 		});
 
 		//self.timerEnabled = false;

@@ -3,6 +3,9 @@
     <div class="md-header">
         <span data-bind="click: onBackClicked"><i class="material-icons md-icon">arrow_back</i></span>
 
+        <span class="header-icon-right" data-bind="click: onFullscreenClicked">
+            <i class="material-icons md-icon" data-bind="text: fullscreenIcon"></i>
+        </span>
     </div>
 
     <div class="settings">
@@ -20,10 +23,13 @@
             </span>
 
             <!-- ko if: active -->
-            <span class="col-md-3 col-sm-4 col-xs-6 new-row-padding" data-bind="text: maxPhrase"></span>
-            <span class="col-md-3 col-sm-4 col-xs-6">
-                <plus-minus-control params="value: maxTerm"></plus-minus-control>
+            <!--<span class="col-md-3 col-sm-4 col-xs-6">-->
+             <span class="col-md-6 col-sm-8 col-xs-12 checkbox-offset">
+                 <span>Max</span>
+                <plus-minus-control params="value: maxTerm, minValue: 1, text: maxPhrase"></plus-minus-control>
             </span>
+            <!--<span class="col-md-3 col-sm-4 col-xs-6 new-row-padding" data-bind="html: maxPhrase"></span>-->
+
             <!-- /ko -->
         </div>
 

@@ -3,20 +3,21 @@
     <div class="md-header">
         <span data-bind="click: onSettingsClicked"><i class="material-icons md-icon">settings</i></span>
 
-        <span class="timer-display" data-bind="text: timeRemaining"></span>
+        <span class="timer-display" data-bind="text: timeRemainingDescrip"></span>
     </div>
 	
 	<div class="quiz-item-container" data-bind="visible: showQuiz">
         <div class="quiz-question" data-bind="html: questionText, style: { color: questionTextColor }"></div>
 
-
-        <div class="row" data-bind="foreach: firstRowOptions">
-            <span class="quiz-answer-option col-xs-3" data-bind="text: value, click: $parent.answerClick"></span>
+        <!-- ko foreach: answerOptionRows -->
+        <div class="row answer-options-row" data-bind="foreach: $data">
+            <div class="quiz-answer-option col-xs-3">
+                <div class="answer-container" data-bind="click: $component.answerClick, event: { mousedown: $component.mouseDown }">
+                    <span class="answer-text" data-bind="text: $data"></span>
+                </div>
+             </div>
         </div>
-
-        <div class="row" data-bind="foreach: secondRowOptions">
-            <span class="quiz-answer-option col-xs-3" data-bind="text: value, click: $parent.answerClick"></span>
-        </div>
+        <!-- /ko -->
 
 	</div>
 
@@ -32,8 +33,12 @@
 
         <div class="quiz-questions row">
         <!-- ko foreach: quizQuestions -->
-        <div class="col-md-6 col-sm-12" data-bind="html: text, style: { color: color }"></div>
+        <div class="col-md-6 col-sm-12" data-bind="html: completeText, style: { color: color }"></div>
         <!-- /ko -->
+        </div>
+
+        <div class="quiz-description" data-bind="visible: showRepeatIncorrect, click: repeatIncorrect">
+            Repeat Incorrect Questions
         </div>
 
         <div class="quiz-start" data-bind="click: startQuiz">
@@ -46,4 +51,17 @@
     <div class="md-footer" data-bind="text: quizProgressDescrip, visible: showQuizFooter"></div>
     
 
+
+</div>
+
+<div data-bind="visible: showConfirmExit">
+    <div class="dialog-background"></div>
+    <div class="dialog-content">
+        <div class="dialog-header">Exit Quiz?</div>
+
+        <div class="dialog-button-container">
+            <span class="dialog-button" data-bind="click: confirmExitYes">Yes</span>
+            <span class="dialog-button" data-bind="click: confirmExitNo">No</span>
+        </div>
+    </div>
 </div>

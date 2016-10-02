@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\question-manager.js" />
+    <Content Include="css\quiz-page.css" />
+    <Content Include="css\settings.css" />
     <Content Include="lib\components\plus-minus-control\plus-minus-control.html" />
     <Content Include="lib\components\plus-minus-control\plus-minus-control.js" />
     <Content Include="lib\components\settings\settings.html" />
