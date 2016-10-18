@@ -30,9 +30,9 @@ define(['knockout'], function(ko) {
             ]),
 
             quizMode: {
-                active: ko.observable(false),
+                //active: ko.observable(false),
                 questionCount: ko.observable(10),
-                timerActive: ko.observable(false),
+                //timerActive: ko.observable(false),
                 timeLimit: ko.observable(5) // minutes
             }
         }
@@ -126,6 +126,8 @@ define(['knockout'], function(ko) {
 		}
 
 		self.saveSettings = function () {
+		    //if (!Cookies) return; // package didn't load
+
 		    var opsStr = '';
 		    var maxTermsStr = '';
 		    var ops = self.settings.operators();
@@ -148,15 +150,14 @@ define(['knockout'], function(ko) {
 		    Cookies.set('operators', opsStr, { expires: 365 });
 		    Cookies.set('maxTerms', maxTermsStr, { expires: 365 });
 
-		    Cookies.set('quizMode', self.settings.quizMode.active() ? '1' : '0', { expires: 365 });
 		    Cookies.set('quizQuestionCount', self.settings.quizMode.questionCount(), { expires: 365 });
-		    Cookies.set('timerActive', self.settings.quizMode.timerActive() ? '1' : '0', { expires: 365 });
 		    Cookies.set('quizTimeLimit', self.settings.quizMode.timeLimit(), { expires: 365 });
 
 
 		}
 
 		self.loadSettings = function () {
+		   // if (Cookies === undefined) return;
 		    var ops = Cookies.get('operators'); // array of 1 or 0 for active/inactive
 		    var opIsActive = false;
 		    if (ops) {
@@ -178,17 +179,9 @@ define(['knockout'], function(ko) {
 		        }
             }
 
-            var quizMode = Cookies.get('quizMode');
-            if (quizMode)
-                self.settings.quizMode.active(quizMode === '1');
-
             var questionCount = Cookies.get('quizQuestionCount');
             if (questionCount)
                 self.settings.quizMode.questionCount(Number(questionCount));
-
-            var timerActive = Cookies.get('timerActive');
-            if (timerActive)
-                self.settings.quizMode.timerActive(timerActive);
 
             var quizTimeLimit = Cookies.get('quizTimeLimit');
             if (quizTimeLimit)

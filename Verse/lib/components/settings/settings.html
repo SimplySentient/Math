@@ -1,9 +1,13 @@
 ﻿<div class="no-select" >
 
     <div class="md-header">
-        <span data-bind="click: onBackClicked"><i class="material-icons md-icon">arrow_back</i></span>
+        <span data-bind="click: onBackClicked">
+            <i class="material-icons md-icon">arrow_back</i>
+            <span class="header-text">Back to Quiz</span>
+        </span>
 
         <span class="header-icon-right" data-bind="click: onFullscreenClicked">
+            <span class="header-text" data-bind="text: fullscreenText"></span>
             <i class="material-icons md-icon" data-bind="text: fullscreenIcon"></i>
         </span>
     </div>
@@ -11,11 +15,11 @@
     <div class="settings">
 
         <div class="settings-group-header">Operators</div>
+        <div class="settings-group-description">Choose operators to be quizzed on and specify how hard the questions are</div>
 
         <!-- ko foreach: operators -->
-
         <div class="settings-list-item row">
-            <span data-bind="click: $parent.toggleActive" class="col-md-3 col-sm-4 col-xs-12">
+            <span data-bind="click: $parent.toggleActive" class="col-lgl-3 col-md-3 col-sm-4 col-xs-12">
                 <span class="settings-icon-container">
                     <i data-bind="visible: active" class="material-icons">check</i>
                 </span>
@@ -23,61 +27,41 @@
             </span>
 
             <!-- ko if: active -->
-            <!--<span class="col-md-3 col-sm-4 col-xs-6">-->
-             <span class="col-md-6 col-sm-8 col-xs-12 checkbox-offset">
-                 <span>Max</span>
-                <plus-minus-control params="value: maxTerm, minValue: 1, text: maxPhrase"></plus-minus-control>
+             <span class="col-lgl-3 col-md-4 col-sm-5 col-xs-7 checkbox-offset">
+                 <span>Highest: </span>
+                 <span data-bind="html: maxPhrase"></span>
             </span>
-            <!--<span class="col-md-3 col-sm-4 col-xs-6 new-row-padding" data-bind="html: maxPhrase"></span>-->
 
+            <span class="col-lg-6 col-md-5 col-sm-3 col-xs-5">
+                <plus-minus-control params="value: maxTerm, minValue: 1, hideValue: true"></plus-minus-control>
+            </span>
             <!-- /ko -->
-        </div>
 
-
-        <!-- /ko -->
-
-
-        <div class="settings-group-header">Quiz</div>
-        <div class="settings-list-item">
-            <span data-bind="click: toggleQuizModeActive" class="col-md-3 col-sm-4 col-xs-12">
-                <span class="settings-icon-container">
-                    <i data-bind="visible: quizMode.active" class="material-icons">check</i>
-                </span>
-                <span class="settings-list-text">Quiz Mode</span>
-            </span>
-        </div>
-
-        <div class="settings-list-item" data-bind="visible: quizMode.active">
-            <span class="scol-md-3 col-sm-4 col-xs-6">
-                <span class="settings-icon-container"></span>
-                Question Count
-            </span>
-            <span class="col-md-3 col-sm-4 col-xs-6">
-                <plus-minus-control params="value: quizMode.questionCount, minValue: 5"></plus-minus-control>
-            </span>
-        </div>
-
-        <!-- ko if: quizMode.active -->
-        <div class="settings-group-header">Timer</div>
-        <div class="settings-list-item">
-            <span data-bind="click: toggleTimeLimitActive" class="col-md-3 col-sm-4 col-xs-12">
-                <span class="settings-icon-container">
-                    <i data-bind="visible: quizMode.timerActive" class="material-icons">check</i>
-                </span>
-                <span class="settings-list-text">Countdown Timer</span>
-            </span>
-        </div>
-
-        <div class="settings-list-item" data-bind="visible: quizMode.timerActive">
-            <span class="scol-md-3 col-sm-4 col-xs-6">
-                <span class="settings-icon-container"></span>
-                Time Limit
-            </span>
-            <span class="col-md-3 col-sm-4 col-xs-6">
-                <plus-minus-control params="value: quizMode.timeLimit, minValue: 1, unit: 'm'"></plus-minus-control>
-            </span>
         </div>
         <!-- /ko -->
+
+
+        <div class="settings-group-header">Options</div>
+        <div class="settings-group-description">Set the number of questions and time limit</div>
+
+        <div class="settings-list-item row">              
+            <span class="col-md-3 col-sm-4 col-xs-6">
+                <span data-bind="text: questionCountText"></span>
+            </span>
+            <span class="col-md-9 col-sm-4 col-xs-6">
+                <plus-minus-control params="value: quizMode.questionCount, minValue: 0, increment: 5, hideValue: true"></plus-minus-control>
+            </span>
+        </div>
+
+        <div class="settings-list-item row">
+            <span class="col-md-3 col-sm-4 col-xs-6">
+                <span data-bind="text: timeLimitText"></span>
+            </span>
+            <span class="col-md-9 col-sm-8 col-xs-6">
+                <plus-minus-control params="value: quizMode.timeLimit, minValue: 0, hideValue: true"></plus-minus-control>
+            </span>
+        </div>
+
 
 
     </div>

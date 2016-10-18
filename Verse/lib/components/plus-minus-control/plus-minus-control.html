@@ -1,9 +1,9 @@
-<span class="no-select">
-    <span class="plus-minus-block" data-bind="click: clickMinus">
+<span class="no-select plus-minus-container">
+    <span class="plus-minus-block" data-bind="click: clickMinus, css: { disabled: !minusIsEnabled() }">
         <i class="material-icons">remove_circle_outline</i>
     </span>
     <!--<span data-bind="event: { mousedown: clickMinusStart, mouseup: clickEnd }">-</span>-->
-    <span class="plus-minus-text-block" data-bind="html: displayValue"></span>
+    <span class="plus-minus-text-block" data-bind="html: displayValue, visible: !hideValue()"></span>
     <!--<span data-bind="event: { mousedown: clickPlusStart, mouseup: clickEnd }">+</span>-->
     <span class="plus-minus-block" data-bind="click: clickPlus">
         <i class="material-icons">add_circle_outline</i>

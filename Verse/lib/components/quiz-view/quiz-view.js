@@ -5,12 +5,15 @@
 		self.questionText = ko.observable('');
 		self.questionTextColor = ko.observable('black');
 		self.showingAnswer = false;
-		self.showQuiz = ko.observable(!params.settings.quizMode.active());
+		self.config = params.settings.quizMode;
+
+		self.showQuizStartScreen = ko.observable(self.config.questionCount() > 0 || self.config.timeLimit() > 0);
+		self.showQuiz = ko.observable(!self.showQuizStartScreen());
 
         // quiz variables
-		self.showQuizFooter = ko.observable(false); 
+		//self.showQuizFooter = ko.observable(false); 
 		//self.quizQuestionNumber = ko.observable(0);
-		self.showQuizStartScreen = ko.observable(params.settings.quizMode.active());
+		
 		self.showQuizResults = ko.observable(false);
 		self.quizQuestions = ko.observableArray([]); // only used to keep track to show in results at end
 		self.quizResultsDescription = ko.observable('');
@@ -29,10 +32,12 @@
 
 		self.init = function () {
 		    questionManager.operators = self.getActiveOperators();
-		    questionManager.quizQuestionCount = params.settings.quizMode.questionCount();
+		    questionManager.quizQuestionCount = self.config.questionCount();
 
-		    if (!params.settings.quizMode.active())
+		    if (self.config.questionCount() === 0) { // start quiz immediately
+		        questionManager.init();
 		        self.newQuestion();
+		    }
 		    //console.log('here!');
 		}
 
@@ -67,7 +72,7 @@
 		}
 
 		self.newQuestion = function () {
-		    if (questionManager.questionNumber() === questionManager.questionCount && params.settings.quizMode.active()) {
+		    if (questionManager.questionNumber() === questionManager.questionCount && questionManager.questionCount > 0) {
 		        self.quizEnd();
 		        return;
 		    }
@@ -81,7 +86,7 @@
 		    temp.push(new   ko.observableArray(questionManager.answerOptions.slice(4, 8)));
 		    self.answerOptionRows(temp);
 
-		    //if (self.quizQuestionNumber() === params.settings.quizMode.questionCount()) {
+		    //if (self.quizQuestionNumber() === self.config.questionCount()) {
 		    //    self.quizEnd();
 		    //} else
 		    //    self.quizQuestionNumber(self.quizQuestionNumber() + 1);
@@ -122,7 +127,7 @@
 		self.quizEnd = function () {
 		    self.showQuizResults(true);
 		    self.showQuiz(false);
-		    self.showQuizFooter(false);
+		    //self.showQuizFooter(false);
 		    clearTimeout(self.timer);
 		    self.timeRemaining(0);
         
@@ -130,12 +135,16 @@
 
 		    var timeStr = 'Completed in ' + self.getTimeLongDisplay(self.elapsedTime);
 
+		    var answeredCount = questionManager.pastQuestions.length;
+
 		    var questionCount = questionManager.questionCount;
+		    if (questionCount === 0)
+		        questionCount = answeredCount;
 		    var correctCount = 0;
 
 
 		    //var tempQuestions = questionManager.pastQuestions; //.slice(0); // create copy
-		    for (var i = 0; i < questionManager.pastQuestions.length; i++) {
+		    for (var i = 0; i < answeredCount; i++) {
 		        var question = questionManager.pastQuestions[i];
 		        var str = question.text;
 		        question.completeText = str.substr(0, str.length - 1) + question.submittedAnswer;
@@ -177,11 +186,8 @@
 
 		self.startQuiz = function () {
 		    self.showQuizStartScreen(false);
-		    //self.quizQuestionNumber(1);
-		    self.showQuizFooter(true);
 		    self.showQuiz(true);
-            //if (!questionManager.repeatIncorrect) 
-		    //    questionManager.clearHistory();
+
 		    questionManager.init();
 
 		    self.showQuizResults(false);
@@ -190,13 +196,16 @@
 
 		    self.newQuestion();
 
-		    if (params.settings.quizMode.timerActive()) {
-		        self.timeRemaining(params.settings.quizMode.timeLimit() * 60);
+		    if (self.config.timeLimit() > 0) 
+		        self.timeRemaining(self.config.timeLimit() * 60);
 
-		        self.timer = setInterval(function () {
-		            self.elapsedTime += 1;
+		    self.timer = setInterval(function () {
+		        self.elapsedTime += 1;
 
-		            var limit = params.settings.quizMode.timeLimit() * 60;
+		        
+
+		        if (self.config.timeLimit() > 0) {
+		            var limit = self.config.timeLimit() * 60;
 
 		            self.timeRemaining(limit - self.elapsedTime)
 
@@ -204,8 +213,9 @@
 		                self.timeRanOut = true;
 		                self.quizEnd();
 		            }
-		        }, 1000);
-		    }
+		        }
+		    }, 1000);
+		    
 		}
 
 		self.timeRemainingDescrip = ko.computed(function () {
@@ -229,7 +239,6 @@
 
 		self.quizDescription = ko.computed(function () {
 		    var str = '';
-		    var quizMode = params.settings.quizMode;
 		    var operators = self.getActiveOperators();
 		    var opsStr = '';
 		    for (var i = 0; i < operators.length; i++) {
@@ -241,15 +250,29 @@
 		        }
 		    }
 
-		    str = quizMode.questionCount() + ' ' + opsStr + ' questions';
+		    // if there is no time limit or question count the description isn't shown
+		    var mins = self.config.timeLimit();
+		    if (mins > 0 && self.config.questionCount() === 0) {
+		        if (mins === 1)
+		            str = mins + ' minute of '
+		        else
+		            str = str = mins + ' minutes of ';
+		    } else
+		        str = self.config.questionCount() + ' ';
 
-		    return str;
+		    return str + opsStr + ' questions';
 		});
 
 
 		self.quizProgressDescrip = ko.computed(function () {
-		    //return self.quizQuestionNumber() + ' of ' + params.settings.quizMode.questionCount();
-		    return questionManager.questionNumber() + ' of ' + questionManager.questionCount;
+		    //return self.quizQuestionNumber() + ' of ' + self.config.questionCount();
+		    //console.log(questionManager.questionNumber());
+		    var num = questionManager.questionNumber();
+
+		    if (questionManager.questionCount === 0)
+		        return '';
+
+		    return num + ' of ' + questionManager.questionCount;
 		});
 
 		self.confirmExitYes = function () {
@@ -262,7 +285,7 @@
 		}
 
 		self.onSettingsClicked = function () {
-		    if (self.showQuiz() && params.settings.quizMode.active())
+		    if (self.showQuiz() && self.config.questionCount() > 0)
 		        self.showConfirmExit(true);
 		    else
 		        self.exit();

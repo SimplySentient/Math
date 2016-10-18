@@ -10,15 +10,20 @@
 		self.minValue = params.minValue || 0;
 		self.unit = params.unit || '';
 		//console.log(self.minValue);
-        
+		self.hideValue = ko.observable(params.hideValue || false);
+		self.increment = params.increment || 1;
 
 		self.clickMinus = function () {
-            if (self.value() > self.minValue)
-		        self.value(self.value() - 1);
+            if (self.minusIsEnabled())
+		        self.value(self.value() - self.increment);
+		}
+
+		self.minusIsEnabled = function () {
+		    return (self.value() > self.minValue);
 		}
 
 		self.clickPlus = function () {
-		    self.value(self.value() + 1);
+		    self.value(self.value() + self.increment);
 		}
 
 		self.displayValue = ko.computed(function () {

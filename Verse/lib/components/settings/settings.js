@@ -10,7 +10,27 @@
 
         self.quizMode = params.settings.quizMode;
 
+
+        self.questionCountText = ko.computed(function () {
+            var count = self.quizMode.questionCount();
+            if (count === 0)
+                return 'Infinite questions'
+            else
+                return count + ' questions';
+        })
+
+        self.timeLimitText = ko.computed(function () {
+            var timeLimit = self.quizMode.timeLimit();
+            if (timeLimit === 0)
+                return 'No time limit'
+            else if (timeLimit === 1)
+                return '1 minute'
+            else
+                return timeLimit + ' minutes';
+        })
+
         self.fullscreenIcon = ko.observable('fullscreen');
+        self.fullscreenText = ko.observable('Fullscreen')
 
         self.toggleActive = function (item) {
             item.active(!item.active());
@@ -45,11 +65,13 @@
                 self.enterFullscreen();
 
                 self.fullscreenIcon('fullscreen_exit');
+                self.fullscreenText('Exit Fullscreen');
             } else {
                 self.exitFullscreen();
 
 
                 self.fullscreenIcon('fullscreen');
+                self.fullscreenText('Fullscreen');
             }
 
         }

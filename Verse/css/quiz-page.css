@@ -5,7 +5,7 @@
 
 
 .quiz-item-container {
-    padding: 16px 16px 90px 16px;
+    padding: 60px 16px 20px 16px; /*16px 90px 16px;*/
 }
 
 
@@ -42,11 +42,9 @@
 .answer-text {
     pointer-events: none;
     position: absolute;
-    /*height: 100%;*/
     left: 0;
     right: 0;
     top: 50%;
-    /*bottom: 0;*/
     transform: translateY(-50%);    
 }
 
@@ -151,22 +149,29 @@
 }
 
 
+.quiz-footer {
+    position: fixed;
+    bottom: 0px;
+    height: 72px;
+    width: 100%;
+    text-align: center;
+    padding-top: 16px;
+    font-size: 24px;
+    pointer-events: none; /* enable clicking on elements below footer */
+}
+
+
 .clickAnimation {
     -webkit-animation-name: clickAnim; /* Chrome, Safari, Opera */
     -webkit-animation-duration: 0.5s; /* Chrome, Safari, Opera */
     animation-name: clickAnim;
     animation-duration: 0.5s;
     
-    /*-moz-border-radius: 50%; 
-    -webkit-border-radius: 50%; 
-    border-radius: 0%;*/
 }
 
 .answer-container {
     width: 100%;
     position: relative;
-    /*padding-bottom: 100%;
-    height: 0px;*/
 }
 
 .answer-container:before{

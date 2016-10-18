@@ -1,24 +1,21 @@
-﻿.md-header {
-    padding-top: 20px;
-}
-
+﻿
 .md-icon {
     font-size: 48px !important;
 }
 
 
 .settings {
-    padding: 40px;
+    padding: 90px 40px 0px 40px;
 }
 @media screen and (max-device-width : 680px)
 {
     .settings {
-        padding: 20px;
+        padding: 90px 20px 0px 20px;
     }
 }
 
 .settings-group-header {
-    padding-bottom: 10px;
+    /*padding-bottom: 10px;*/
     font-size: 36px;
 }
 
@@ -26,14 +23,23 @@
     padding-top: 30px;
 }
 
+.settings-group-description {
+    font-size: 16px;
+    color: #000c;
+    padding-bottom: 20px;
+}
+
+
 .settings-icon-container {
     width: 30px;
     display: inline-block;
 }
 
+
 .settings-list-item {
     height: 36px;
     font-size: 24px;
+    padding-bottom: 10px;
 }
 @media screen and (max-device-width : 680px)
 {
@@ -41,6 +47,13 @@
         font-size: 18px;
     }
 }
+@media screen and (max-device-width : 480px) 
+{
+    .settings-list-item {
+        font-size: 16px;
+    }
+}
+
 
 .new-row-padding {
     padding-left: 0px;
@@ -58,8 +71,16 @@
 .plus-minus-block {
     /*display: inline-block;
     width: 60px;*/
-    padding: 0px 20px;
+    /*padding: 0px 20px;*/
 }
+
+.plus-minus-container span:first-child {
+    padding-right: 20px;
+}
+.plus-minus-container span:last-child {
+    padding-left: 20px;
+}
+
 @media screen and (max-device-width : 510px)
 {
     .plus-minus-block {
@@ -73,6 +94,9 @@
     text-align: center;
 }
 
+.disabled {
+    color: grey;
+}
 
 .checkbox-offset {
     padding-left: 0px;

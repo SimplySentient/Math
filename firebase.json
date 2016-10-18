@@ -1,9 +1,14 @@
 {
-  "firebase": "blistering-heat-8404",
-  "public": "Verse",
-  "ignore": [
-    "firebase.json",
-    "**/.*",
-    "**/node_modules/**"
-  ]
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "hosting": {
+    "public": "Verse",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
 }
